@@ -63,13 +63,9 @@ sudo apt update
 sudo apt install -y faugus-launcher
 
 
-# 9. Atuin (Magical Shell History)
+# 9. Ensure x11 (For Redshift and CopyQ to work)
 
-curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh -s -- --non-interactive
-
-if ! grep -q 'atuin init bash' ~/.bashrc; then
-    echo 'eval "$(atuin init bash)"' >> ~/.bashrc
-fi
+sudo sed -i -E 's/^# ?WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
 
 # 10. Flatpak Setup and Applications
 
@@ -101,17 +97,52 @@ sudo sysctl -p
 
 # 12. Redshift
 
-sudo apt install -y redshift redshift-gtk
+ sudo apt install -y redshift redshift-gtk
 
-mkdir -p ~/.config/autostart
-cat <<EOF > ~/.config/autostart/redshift-fixed.desktop
-[Desktop Entry]
-Type=Application
-Name=Redshift Fixed Temperature
-Comment=Sets constant screen temperature
-Exec=redshift -P -O 4900
-X-GNOME-Autostart-enabled=true
-Hidden=false
+
+CONFIG_DIR="$HOME/.config/redshift"
+
+CONFIG_FILE_DIR="$CONFIG_DIR/redshift.conf"
+
+CONFIG_FILE_ROOT="$HOME/.config/redshift.conf"
+
+
+mkdir -p "$CONFIG_DIR"
+
+
+cat > "$CONFIG_FILE_DIR" << 'EOF'
+
+[redshift]
+
+temp-day=4900
+
+temp-night=4900
+
+transition=0
+
+adjustment-method=randr
+
+location-provider=manual
+
+
+[manual]
+
+lat=0.0
+
+lon=0.0
+
+
+[randr]
+
+screen=HDMI-A-0
+
+screen=HDMI-A-1-1
+
 EOF
+
+
+cp -f "$CONFIG_FILE_DIR" "$CONFIG_FILE_ROOT"
+
+chmod 644 "$CONFIG_FILE_DIR" "$CONFIG_FILE_ROOT"
 
 echo "Setup complete! Please restart your computer to apply all changes."

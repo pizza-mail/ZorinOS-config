@@ -95,7 +95,18 @@ fi
 
 sudo sysctl -p
 
-# 12. Redshift
+# 12. Enable custom volume keys
+
+gsettings set org.gnome.settings-daemon.plugins.media-keys volume-up "['Page_Up']"
+
+
+gsettings set org.gnome.settings-daemon.plugins.media-keys volume-down "['Page_Down']"
+
+
+gsettings set org.gnome.settings-daemon.plugins.media-keys volume-mute "['End']"
+
+
+# 13.Redshift
 
  sudo apt install -y redshift redshift-gtk
 

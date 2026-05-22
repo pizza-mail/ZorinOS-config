@@ -25,6 +25,10 @@ sudo apt install -y libgl1-mesa-dri:i386 mesa-vulkan-drivers mesa-vulkan-drivers
 
 sudo apt install -y pipewire-audio-client-libraries libspa-0.2-jack wireplumber
 
+amixer -D hw:Generic_1 sset "Auto-Mute Mode" Disabled
+
+sudo alsactl store
+
 
 # 5. Bloat removal
 

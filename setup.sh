@@ -3,44 +3,57 @@ set -e
 
 trap 'echo "ERROR on line $LINENO. Press Enter to exit."; read' ERR
 
-# 1. Enable 32-bit support and add the Driver Repository
+# 1. Update the system
+
+sudo apt update && sudo apt full-upgrade -y
+
+# 2. Debloat
+
+(
+set +e
+
+sudo apt remove -y --purge 'libreoffice*' 'remmina*' 'cups*' 'evolution*' 'whoopsie*' 'bluez*' bluetooth blueman brave-browser
+
+sudo rm -f /etc/apt/sources.list.d/brave-browser*.list
+sudo rm -f /usr/share/keyrings/brave-browser*.gpg
+sudo rm -rf ~/.config/BraveSoftware ~/.local/share/BraveSoftware ~/.cache/BraveSoftware
+sudo rm -rf ~/.config/brave ~/.local/share/brave ~/.cache/brave
+
+
+sudo systemctl disable --now snapd
+sudo apt remove -y --purge snapd
+sudo rm -rf /snap /var/snap /var/lib/snapd /var/cache/snapd
+echo "Package: snapd
+Pin: release a=*
+Pin-Priority: -1" | sudo tee /etc/apt/preferences.d/no-snapd.pref
+
+sudo apt autoremove -y --purge
+
+)
+
+# 3. Enable 32-bit support and add the Driver Repository
 
 sudo dpkg --add-architecture i386
 
 sudo add-apt-repository ppa:kisak/kisak-mesa -y
 
-sudo apt update
+# 4. Upgrade the system again to use the new drivers
 
+sudo apt update && sudo apt full-upgrade -y
 
-# 2. Upgrade the system to use the new drivers
-
-sudo apt full-upgrade -y
-
-
-# 3. Vulkan support
+# 5. Vulkan support
 
 sudo apt install -y libgl1-mesa-dri:i386 mesa-vulkan-drivers mesa-vulkan-drivers:i386 libvulkan1 libvulkan1:i386 vulkan-tools
 
-# 4. Audio stack
+# 6. Audio stack
 
-sudo apt install -y pipewire-audio-client-libraries libspa-0.2-jack wireplumber
+sudo apt install -y pipewire-alsa pipewire-jack libspa-0.2-jack wireplumber
 
-amixer -D hw:Generic_1 sset "Auto-Mute Mode" Disabled
+amixer -D hw:Generic_1 sset "Auto-Mute Mode" Disabled 2>/dev/null || echo "WARN: amixer device not found, skipping."
 
 sudo alsactl store
 
-
-# 5. Bloat removal
-
-sudo apt remove -y --purge gnome-maps gnome-games libreoffice* bluetooth bluez brave-browser || true 
-sudo apt autoremove -y || true
-sudo apt clean || true
-
-rm -rf ~/.config/BraveSoftware ~/.local/share/BraveSoftware ~/.cache/BraveSoftware || true
-rm -rf ~/.config/brave ~/.local/share/brave ~/.cache/brave || true
-
-
-# 6. Download Brave Origin
+# 7. Download Brave Origin
 
 sudo apt install curl -y
 
@@ -52,13 +65,11 @@ sudo apt update
 
 sudo apt install brave-origin-nightly -y
 
-
-# 7.Steam
+# 8.Steam
 
 sudo apt install -y steam
 
-
-# 8. Faugus Launcher
+# 9. Faugus Launcher
 
 sudo add-apt-repository -y ppa:faugus/faugus-launcher
 
@@ -67,11 +78,11 @@ sudo apt update
 sudo apt install -y faugus-launcher
 
 
-# 9. Ensure x11 (For Redshift and CopyQ to work)
+# 10. Ensure x11 (For Redshift and CopyQ to work)
 
 sudo sed -i -E 's/^# ?WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
 
-# 10. Flatpak Setup and Applications
+# 11. Flatpak Setup and Applications
 
 sudo apt install -y flatpak
 
@@ -79,11 +90,11 @@ sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flat
 
 flatpak install flathub dev.vencord.Vesktop -y
 
-flatpak install flathub eu.betterbird.Betterbird -y
+flatpak install flathub io.github.hkdb.Aerion -y
 
 flatpak install flathub com.github.hluk.copyq -y
 
-# 11. Kernel Optimizations
+# 12. Kernel Optimizations
 
 if ! sudo grep -q "^vm.swappiness=" /etc/sysctl.conf; then
     echo 'vm.swappiness=10' | sudo tee -a /etc/sysctl.conf
@@ -99,21 +110,17 @@ fi
 
 sudo sysctl -p
 
-# 12. Enable custom volume keys
+# 13. Enable custom volume keys
 
 gsettings set org.gnome.settings-daemon.plugins.media-keys volume-up "['Page_Up']"
 
-
 gsettings set org.gnome.settings-daemon.plugins.media-keys volume-down "['Page_Down']"
-
 
 gsettings set org.gnome.settings-daemon.plugins.media-keys volume-mute "['End']"
 
+# 14.Redshift
 
-# 13.Redshift
-
- sudo apt install -y redshift redshift-gtk
-
+sudo apt install -y redshift redshift-gtk
 
 CONFIG_DIR="$HOME/.config/redshift"
 
@@ -121,9 +128,7 @@ CONFIG_FILE_DIR="$CONFIG_DIR/redshift.conf"
 
 CONFIG_FILE_ROOT="$HOME/.config/redshift.conf"
 
-
 mkdir -p "$CONFIG_DIR"
-
 
 cat > "$CONFIG_FILE_DIR" << 'EOF'
 
@@ -159,5 +164,35 @@ EOF
 cp -f "$CONFIG_FILE_DIR" "$CONFIG_FILE_ROOT"
 
 chmod 644 "$CONFIG_FILE_DIR" "$CONFIG_FILE_ROOT"
+
+# 15.  Auto-start config
+
+mkdir -p "$HOME/.config/autostart"
+
+create_autostart_entry() {
+local app_name="$1"
+local app_command="$2"
+
+local file_name
+file_name=$(echo "$app_name" | tr '[:upper:]' '[:lower:]' | tr -d ' ')
+local target_file="$HOME/.config/autostart/${file_name}.desktop"
+
+cat <<EOF > "$target_file"
+[Desktop Entry]
+Type=Application
+Name=$app_name
+Exec=$app_command
+Terminal=false
+X-GNOME-Autostart-enabled=true
+EOF
+
+echo "✓ Configured $app_name for startup."
+}
+
+create_autostart_entry "Aerion" "flatpak run io.github.hkdb.Aerion"
+create_autostart_entry "Vesktop" "flatpak run dev.vencord.Vesktop"
+create_autostart_entry "CopyQ" "flatpak run com.github.hluk.copyq"
+create_autostart_entry "Steam" "steam"
+
 
 echo "Setup complete! Please restart your computer to apply all changes."

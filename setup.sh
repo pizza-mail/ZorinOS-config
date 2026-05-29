@@ -137,7 +137,6 @@ CONFIG_FILE_ROOT="$HOME/.config/redshift.conf"
 mkdir -p "$CONFIG_DIR"
 
 cat > "$CONFIG_FILE_DIR" << 'EOF'
-
 [redshift]
 
 temp-day=4900
@@ -160,9 +159,7 @@ lon=0.0
 
 [randr]
 
-screen=HDMI-A-0
-
-screen=HDMI-A-1-1
+screen=0
 
 EOF
 

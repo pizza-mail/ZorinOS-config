@@ -23,9 +23,12 @@ sudo rm -rf ~/.config/brave ~/.local/share/brave ~/.cache/brave
 sudo systemctl disable --now snapd
 sudo apt remove -y --purge snapd
 sudo rm -rf /snap /var/snap /var/lib/snapd /var/cache/snapd
-echo "Package: snapd
+
+sudo tee /etc/apt/preferences.d/no-snapd.pref << 'EOF'
+Package: snapd
 Pin: release a=*
-Pin-Priority: -1" | sudo tee /etc/apt/preferences.d/no-snapd.pref
+Pin-Priority: -1
+EOF
 
 sudo apt autoremove -y --purge
 
@@ -78,7 +81,7 @@ sudo apt update
 sudo apt install -y faugus-launcher
 
 
-# 10. Ensure x11 (For Redshift and CopyQ to work)
+# 10. Ensure x11 // For Redshift and CopyQ to work
 
 sudo sed -i -E 's/^# ?WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
 
@@ -118,7 +121,7 @@ gsettings set org.gnome.settings-daemon.plugins.media-keys volume-down "['Page_D
 
 gsettings set org.gnome.settings-daemon.plugins.media-keys volume-mute "['End']"
 
-# 14.Redshift
+# 14.Redshift // Screens are confirmed as accurately listed
 
 sudo apt install -y redshift redshift-gtk
 

@@ -83,7 +83,10 @@ sudo apt install -y faugus-launcher
 
 # 10. Ensure x11 // For Redshift and CopyQ to work
 
-sudo sed -i -E 's/^# ?WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
+sudo sed -i -E 's/^#[ ]?WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
+if ! sudo grep -q "^WaylandEnable=false" /etc/gdm3/custom.conf; then
+     sudo sed -i '/^\[daemon\]/a WaylandEnable=false' /etc/gdm3/custom.conf
+fi
 
 # 11. Flatpak Setup and Applications
 

@@ -9,5 +9,5 @@ chmod +x setup.sh
 Run it:
 
 ./setup.sh
-or
-sudo ./setup.sh
+
+Do not run as SUDO

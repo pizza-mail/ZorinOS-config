@@ -163,7 +163,6 @@ screen=0
 
 EOF
 
-
 cp -f "$CONFIG_FILE_DIR" "$CONFIG_FILE_ROOT"
 
 chmod 644 "$CONFIG_FILE_DIR" "$CONFIG_FILE_ROOT"
@@ -197,6 +196,5 @@ create_autostart_entry "Vesktop" "flatpak run dev.vencord.Vesktop"
 create_autostart_entry "CopyQ" "flatpak run com.github.hluk.copyq"
 create_autostart_entry "Steam" "steam"
 create_autostart_entry "Redshift" "redshift-gtk"
-
 
 echo "Setup complete! Please restart your computer to apply all changes."

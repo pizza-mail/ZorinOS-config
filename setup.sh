@@ -196,6 +196,7 @@ create_autostart_entry "Aerion" "flatpak run io.github.hkdb.Aerion"
 create_autostart_entry "Vesktop" "flatpak run dev.vencord.Vesktop"
 create_autostart_entry "CopyQ" "flatpak run com.github.hluk.copyq"
 create_autostart_entry "Steam" "steam"
+create_autostart_entry "Redshift" "redshift-gtk"
 
 
 echo "Setup complete! Please restart your computer to apply all changes."

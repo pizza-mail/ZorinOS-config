@@ -100,6 +100,8 @@ flatpak install flathub io.github.hkdb.Aerion -y
 
 flatpak install flathub com.github.hluk.copyq -y
 
+flatpak install flathub org.gimp.GIMP -y
+
 # 12. Kernel Optimizations
 
 if ! sudo grep -q "^vm.swappiness=" /etc/sysctl.conf; then

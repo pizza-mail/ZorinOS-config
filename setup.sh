@@ -12,7 +12,7 @@ sudo apt update && sudo apt full-upgrade -y
 (
 set +e
 
-sudo apt remove -y 'libreoffice*' 'remmina*' 'cups*' 'evolution*' 'whoopsie*' 'bluez*' bluetooth blueman
+
 sudo apt remove -y --purge brave-browser
 
 sudo rm -f /etc/apt/sources.list.d/brave-browser*.list
@@ -21,17 +21,7 @@ sudo rm -rf ~/.config/BraveSoftware ~/.local/share/BraveSoftware ~/.cache/BraveS
 sudo rm -rf ~/.config/brave ~/.local/share/brave ~/.cache/brave
 
 
-sudo systemctl disable --now snapd
-sudo apt remove -y --purge snapd
-sudo rm -rf /snap /var/snap /var/lib/snapd /var/cache/snapd
-
-sudo tee /etc/apt/preferences.d/no-snapd.pref << 'EOF'
-Package: snapd
-Pin: release a=*
-Pin-Priority: -1
-EOF
-
-sudo apt autoremove -y --purge
+sudo apt autoremove -y
 
 )
 

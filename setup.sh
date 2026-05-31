@@ -12,7 +12,8 @@ sudo apt update && sudo apt full-upgrade -y
 (
 set +e
 
-sudo apt remove -y --purge 'libreoffice*' 'remmina*' 'cups*' 'evolution*' 'whoopsie*' 'bluez*' bluetooth blueman brave-browser
+sudo apt remove -y 'libreoffice*' 'remmina*' 'cups*' 'evolution*' 'whoopsie*' 'bluez*' bluetooth blueman
+sudo apt remove -y --purge brave-browser
 
 sudo rm -f /etc/apt/sources.list.d/brave-browser*.list
 sudo rm -f /usr/share/keyrings/brave-browser*.gpg
@@ -83,10 +84,7 @@ sudo apt install -y faugus-launcher
 
 # 10. Ensure x11 // For Redshift and CopyQ to work
 
-sudo sed -i -E 's/^#[ ]?WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
-if ! sudo grep -q "^WaylandEnable=false" /etc/gdm3/custom.conf; then
-     sudo sed -i '/^\[daemon\]/a WaylandEnable=false' /etc/gdm3/custom.conf
-fi
+sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
 
 # 11. Flatpak Setup and Applications
 
